@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Belajar Transformasi Geometri - Canva Code</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Grid background pattern for the coordinate plane */
+    .grid-bg {
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .handle { cursor: grab; }
+    .handle:active { cursor: grabbing; }
+    /* Smooth fade for updates */
+    .fade-in { animation: fade 300ms ease-out; }
+    @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Canva Codes: Transformasi Geometri Interaktif</h1>
+          <p class="text-slate-300 mt-2">Pelajari, visualisasikan, dan latihan: translasi, refleksi, rotasi, dan dilatasi — semuanya di satu tempat.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 rounded-full bg-indigo-600/30 border border-indigo-400/40 text-indigo-200 text-sm">Responsif</span>
+          <span class="px-3 py-1 rounded-full bg-emerald-600/30 border border-emerald-400/40 text-emerald-200 text-sm">Interaktif</span>
+          <span class="px-3 py-1 rounded-full bg-pink-600/30 border border-pink-400/40 text-pink-200 text-sm">Edu</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="mb-6">
+      <div class="inline-flex rounded-xl bg-white/5 p-1 border border-white/10 backdrop-blur">
+        <button id="tabExplore" class="tab-btn px-4 py-2 rounded-lg bg-white/10 text-white font-medium">Visual</button>
+        <button id="tabLearn" class="tab-btn px-4 py-2 rounded-lg text-slate-200 hover:text-white">Pelajari</button>
+        <button id="tabPractice" class="tab-btn px-4 py-2 rounded-lg text-slate-200 hover:text-white">Latihan</button>
+      </div>
+    </div>
+
+    <!-- Explore (Visual) -->
+    <section id="viewExplore" class="space-y-4">
+      <!-- Controls -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-semibold">Kontrol Transformasi</h2>
+            <div class="flex items-center gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded bg-slate-700/50">Mode</span>
+              <button id="modePoint" class="px-2 py-1 rounded bg-indigo-600 text-white">Titik</button>
+              <button id="modeShape" class="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600">Segitiga</button>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <!-- Transformation Type -->
+            <div>
+              <label class="block text-sm text-slate-300 mb-1">Jenis Transformasi</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button data-t="translation" class="t-btn px-3 py-2 rounded-lg bg-white/10 border border-white/10">Translasi</button>
+                <button data-t="reflection" class="t-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">Refleksi</button>
+                <button data-t="rotation" class="t-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">Rotasi</button>
+                <button data-t="dilation" class="t-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">Dilatasi</button>
+              </div>
+            </div>
+
+            <!-- Parameters -->
+            <div id="params" class="space-y-3">
+              <!-- Translasi -->
+              <div data-p="translation" class="param-panel">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-xs text-slate-300">Geser Δx</label>
+                    <input id="dx" type="number" value="2" class="mt-1 w-full bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  </div>
+                  <div>
+                    <label class="text-xs text-slate-300">Geser Δy</label>
+                    <input id="dy" type="number" value="1" class="mt-1 w-full bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Refleksi -->
+              <div data-p="reflection" class="param-panel hidden">
+                <label class="text-xs text-slate-300">Cermin terhadap</label>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                  <button data-ref="x" class="ref-btn px-3 py-2 rounded-lg bg-white/10 border border-white/10">Sumbu X</button>
+                  <button data-ref="y" class="ref-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">Sumbu Y</button>
+                  <button data-ref="y=x" class="ref-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">Garis y = x</button>
+                  <button data-ref="y=-x" class="ref-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">Garis y = −x</button>
+                </div>
+              </div>
+
+              <!-- Rotasi -->
+              <div data-p="rotation" class="param-panel hidden">
+                <label class="text-xs text-slate-300">Rotasi (pusat O)</label>
+                <div class="grid grid-cols-3 gap-2 mt-1">
+                  <button data-rot="90ccw" class="rot-btn px-3 py-2 rounded-lg bg-white/10 border border-white/10">90° ⟲</button>
+                  <button data-rot="180" class="rot-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">180°</button>
+                  <button data-rot="270ccw" class="rot-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">270° ⟲</button>
+                  <button data-rot="90cw" class="rot-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">90° ⟳</button>
+                  <button data-rot="270cw" class="rot-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">270° ⟳</button>
+                  <button data-rot="360" class="rot-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10">360°</button>
+                </div>
+              </div>
+
+              <!-- Dilatasi -->
+              <div data-p="dilation" class="param-panel hidden">
+                <label class="text-xs text-slate-300">Faktor Skala (pusat O)</label>
+                <div class="flex items-center gap-3 mt-1">
+                  <input id="scale" type="number" step="0.1" value="1.5" class="w-28 bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <div class="flex gap-2 text-xs">
+                    <button class="scale-suggest px-2 py-1 rounded bg-slate-700 hover:bg-slate-600" data-s="0.5">0.5</button>
+                    <button class="scale-suggest px-2 py-1 rounded bg-slate-700 hover:bg-slate-600" data-s="2">2</button>
+                    <button class="scale-suggest px-2 py-1 rounded bg-slate-700 hover:bg-slate-600" data-s="-1">-1</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-2 flex flex-wrap gap-2">
+              <button id="applyBtn" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-medium">Terapkan</button>
+              <button id="resetBtn" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600">Reset</button>
+              <button id="randomBtn" class="px-4 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-600">Acak Titik</button>
+            </div>
+
+            <!-- Point Input -->
+            <div id="pointInputs" class="grid grid-cols-2 gap-3 pt-2">
+              <div>
+                <label class="text-xs text-slate-300">Titik (x)</label>
+                <input id="pxInput" type="number" value="1" class="mt-1 w-full bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2">
+              </div>
+              <div>
+                <label class="text-xs text-slate-300">Titik (y)</label>
+                <input id="pyInput" type="number" value="2" class="mt-1 w-full bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2">
+              </div>
+            </div>
+
+            <!-- Info -->
+            <div class="mt-3 p-3 rounded-xl bg-indigo-900/30 border border-indigo-700/40 text-sm text-indigo-100">
+              Tip: Seret titik/vertices di bidang, lalu klik Terapkan untuk melihat bayangannya.
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="lg:col-span-5 p-4 rounded-2xl bg-white/5 border border-white/10">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xl font-semibold">Bidang Koordinat</h2>
+            <div class="flex items-center gap-2 text-xs text-slate-300">
+              <label class="flex items-center gap-2">
+                Grid: <input id="gridToggle" type="checkbox" checked class="accent-indigo-500">
+              </label>
+              <label class="flex items-center gap-2">
+                Label: <input id="labelToggle" type="checkbox" checked class="accent-indigo-500">
+              </label>
+            </div>
+          </div>
+
+          <div class="relative rounded-xl overflow-hidden border border-white/10">
+            <svg id="plane" viewBox="0 0 800 600" class="w-full h-[340px] md:h-[420px] bg-slate-900 grid-bg"></svg>
+          </div>
+
+          <div class="text-xs text-slate-300 mt-2">
+            Skala: 1 kotak = 1 satuan. Pusat O berada di tengah.
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="lg:col-span-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h2 class="text-xl font-semibold mb-3">Hasil & Rumus</h2>
+          <div id="formula" class="text-sm text-slate-200 space-y-2 mb-3"></div>
+          <div class="space-y-2">
+            <div class="p-3 rounded-lg bg-slate-800/50">
+              <div class="font-semibold text-slate-100">Koordinat Asal</div>
+              <div id="origList" class="text-slate-300 text-sm mt-1"></div>
+            </div>
+            <div class="p-3 rounded-lg bg-emerald-900/30">
+              <div class="font-semibold text-emerald-100">Koordinat Bayangan</div>
+              <div id="imageList" class="text-emerald-200 text-sm mt-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learn -->
+    <section id="viewLearn" class="hidden">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 4 types -->
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="text-lg font-bold mb-2">4 Jenis Transformasi</h3>
+          <ul class="list-disc list-inside text-slate-200 space-y-1">
+            <li>Translasi: geser sejauh (Δx, Δy)</li>
+            <li>Refleksi: cermin terhadap sumbu/garis</li>
+            <li>Rotasi: putar terhadap pusat tertentu</li>
+            <li>Dilatasi: perbesar/perkecil terhadap pusat</li>
+          </ul>
+        </div>
+
+        <!-- 6 rotations -->
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="text-lg font-bold mb-2">6 Macam Rotasi (pusat O)</h3>
+          <ul class="list-disc list-inside text-slate-200 space-y-1">
+            <li>90° berlawanan jarum jam (x, y) → (−y, x)</li>
+            <li>180° (x, y) → (−x, −y)</li>
+            <li>270° berlawanan jarum jam (x, y) → (y, −x)</li>
+            <li>90° searah jarum jam (x, y) → (y, −x)</li>
+            <li>270° searah jarum jam (x, y) → (−y, x)</li>
+            <li>360° (kembali ke asal)</li>
+          </ul>
+          <p class="text-xs text-slate-400 mt-2">Catatan: arah positif adalah berlawanan jarum jam.</p>
+        </div>
+
+        <!-- Formulas -->
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="text-lg font-bold mb-2">Rumus Singkat</h3>
+          <div class="text-slate-200 text-sm space-y-1">
+            <p>Translasi T(a,b): (x,y) → (x+a, y+b)</p>
+            <p>Refleksi sumbu X: (x,y) → (x, −y)</p>
+            <p>Refleksi sumbu Y: (x,y) → (−x, y)</p>
+            <p>Refleksi y=x: (x,y) → (y, x)</p>
+            <p>Refleksi y=−x: (x,y) → (−y, −x)</p>
+            <p>Dilatasi skala k (pusat O): (x,y) → (kx, ky)</p>
+          </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10 md:col-span-2">
+          <h3 class="text-lg font-bold mb-2">Cara Cepat Membedakan</h3>
+          <ul class="list-disc list-inside text-slate-200 space-y-1">
+            <li>Jarak & ukuran sama, hanya bergeser → Translasi</li>
+            <li>Bayangan “tercermin” simetris → Refleksi</li>
+            <li>Beralih arah sudut terhadap pusat → Rotasi</li>
+            <li>Ukuran berubah proporsional (besar/kecil) → Dilatasi</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice -->
+    <section id="viewPractice" class="hidden">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <!-- Generator -->
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-bold">Soal Acak</h3>
+            <button id="newQuestion" class="px-3 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-600">Buat Soal</button>
+          </div>
+          <div id="qBox" class="text-slate-200 space-y-2">
+            <p id="qText" class="font-medium"></p>
+            <div id="qParams" class="text-sm text-slate-300"></div>
+          </div>
+          <form id="qForm" class="mt-3 space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-300">x'</label>
+                <input id="ansX" type="number" step="1" class="mt-1 w-full bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2">
+              </div>
+              <div>
+                <label class="text-xs text-slate-300">y'</label>
+                <input id="ansY" type="number" step="1" class="mt-1 w-full bg-slate-800/60 border border-slate-600 rounded-lg px-3 py-2">
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500">Cek Jawaban</button>
+              <button id="showAnswer" type="button" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600">Tampilkan Jawaban</button>
+            </div>
+            <div id="qFeedback" class="text-sm mt-1"></div>
+          </form>
+        </div>
+
+        <!-- Mini Classifier -->
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="text-lg font-bold mb-3">Bedakan Jenis Transformasi</h3>
+          <p class="text-slate-300 text-sm mb-3">Lihat petunjuknya, lalu pilih jenis yang tepat.</p>
+          <div id="clue" class="p-3 rounded-xl bg-slate-800/50 text-slate-200 mb-3"></div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button class="clf-btn px-3 py-2 rounded-lg bg-white/10 border border-white/10" data-type="translasi">Translasi</button>
+            <button class="clf-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10" data-type="refleksi">Refleksi</button>
+            <button class="clf-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10" data-type="rotasi">Rotasi</button>
+            <button class="clf-btn px-3 py-2 rounded-lg bg-white/5 border border-white/10" data-type="dilatasi">Dilatasi</button>
+          </div>
+          <div id="clfFeedback" class="text-sm mt-3"></div>
+          <button id="newClue" class="mt-3 px-3 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-600">Petunjuk Baru</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-slate-400 text-sm">
+      Dibuat oleh Canva Code • Siap dipakai untuk belajar dan latihan cepat.
+    </footer>
+  </div>
+
+  <script>
+    // ---------- Utilities ----------
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    // ---------- Tabs ----------
+    const views = {
+      explore: $('#viewExplore'),
+      learn: $('#viewLearn'),
+      practice: $('#viewPractice')
+    };
+    const tabBtns = {
+      explore: $('#tabExplore'),
+      learn: $('#tabLearn'),
+      practice: $('#tabPractice')
+    };
+    function switchTab(tab) {
+      Object.values(views).forEach(v => v.classList.add('hidden'));
+      Object.values(tabBtns).forEach(b => b.classList.remove('bg-white/10','text-white'));
+      if (tab === 'explore') { views.explore.classList.remove('hidden'); tabBtns.explore.classList.add('bg-white/10','text-white'); }
+      if (tab === 'learn') { views.learn.classList.remove('hidden'); tabBtns.learn.classList.add('bg-white/10','text-white'); }
+      if (tab === 'practice') { views.practice.classList.remove('hidden'); tabBtns.practice.classList.add('bg-white/10','text-white'); }
+    }
+    tabBtns.explore.addEventListener('click', ()=>switchTab('explore'));
+    tabBtns.learn.addEventListener('click', ()=>switchTab('learn'));
+    tabBtns.practice.addEventListener('click', ()=>switchTab('practice'));
+
+    // ---------- Coordinate Plane ----------
+    const svg = $('#plane');
+    const W = 800, H = 600;
+    const unit = 40; // 1 unit = 40px
+    const origin = { x: W/2, y: H/2 };
+
+    // State
+    let mode = 'point'; // 'point' or 'shape'
+    let transformType = 'translation';
+    let translation = { dx: 2, dy: 1 };
+    let reflection = 'x'; // 'x', 'y', 'y=x', 'y=-x'
+    let rotation = '90ccw'; // six types + 360
+    let scaleK = 1.5;
+
+    // Geometry state
+    let point = { x: 1, y: 2 }; // logical coords
+    // default triangle
+    let triangle = [
+      { id: 'A', x: -2, y: 1 },
+      { id: 'B', x: 1, y: 3 },
+      { id: 'C', x: 3, y: -1 },
+    ];
+    let dragging = null;
+
+    // DOM elements
+    const dxInput = $('#dx'); const dyInput = $('#dy');
+    const pxInput = $('#pxInput'); const pyInput = $('#pyInput');
+    const scaleInput = $('#scale');
+    const gridToggle = $('#gridToggle'); const labelToggle = $('#labelToggle');
+    const applyBtn = $('#applyBtn'); const resetBtn = $('#resetBtn'); const randomBtn = $('#randomBtn');
+    const origList = $('#origList'); const imageList = $('#imageList'); const formulaBox = $('#formula');
+
+    // ---------- Helpers for transforms ----------
+    function T(p) { return { x: p.x + translation.dx, y: p.y + translation.dy }; }
+    function R(p) {
+      switch (reflection) {
+        case 'x': return { x: p.x, y: -p.y };
+        case 'y': return { x: -p.x, y: p.y };
+        case 'y=x': return { x: p.y, y: p.x };
+        case 'y=-x': return { x: -p.y, y: -p.x };
+      }
+    }
+    function Rot(p) {
+      const { x, y } = p;
+      switch (rotation) {
+        case '90ccw': return { x: -y, y: x };
+        case '180': return { x: -x, y: -y };
+        case '270ccw': return { x: y, y: -x };
+        case '90cw': return { x: y, y: -x };
+        case '270cw': return { x: -y, y: x };
+        case '360': return { x, y };
+      }
+    }
+    function D(p) { return { x: p.x * scaleK, y: p.y * scaleK }; }
+
+    function applyTransform(p) {
+      if (transformType === 'translation') return T(p);
+      if (transformType === 'reflection') return R(p);
+      if (transformType === 'rotation') return Rot(p);
+      if (transformType === 'dilation') return D(p);
+      return p;
+    }
+
+    // ---------- Coordinate conversions ----------
+    function toScreen(p) {
+      return { x: origin.x + p.x * unit, y: origin.y - p.y * unit };
+    }
+    function toLogical(sx, sy) {
+      return { x: +( (sx - origin.x) / unit ).toFixed(2), y: +( (origin.y - sy) / unit ).toFixed(2) };
+    }
+
+    // ---------- Draw Plane ----------
+    function drawAxes() {
+      svg.innerHTML = '';
+      // Grid toggled by CSS background; axes via SVG lines
+      const axes = document.createElementNS('http://www.w3.org/2000/svg','g');
+
+      // Axes lines
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg','line');
+      xAxis.setAttribute('x1', '0'); xAxis.setAttribute('y1', origin.y);
+      xAxis.setAttribute('x2', W); xAxis.setAttribute('y2', origin.y);
+      xAxis.setAttribute('stroke', '#94a3b8'); xAxis.setAttribute('stroke-width', '1.5');
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg','line');
+      yAxis.setAttribute('x1', origin.x); yAxis.setAttribute('y1', '0');
+      yAxis.setAttribute('x2', origin.x); yAxis.setAttribute('y2', H);
+      yAxis.setAttribute('stroke', '#94a3b8'); yAxis.setAttribute('stroke-width', '1.5');
+
+      axes.appendChild(xAxis); axes.appendChild(yAxis);
+
+      // Ticks and labels
+      const showLabels = labelToggle.checked;
+      for (let i = -Math.floor(W/(2*unit)); i <= Math.floor(W/(2*unit)); i++) {
+        if (i === 0) continue;
+        const p = toScreen({x:i, y:0});
+        const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
+        tick.setAttribute('x1', p.x); tick.setAttribute('y1', origin.y-5);
+        tick.setAttribute('x2', p.x); tick.setAttribute('y2', origin.y+5);
+        tick.setAttribute('stroke', '#64748b'); tick.setAttribute('stroke-width', '1');
+        axes.appendChild(tick);
+        if (showLabels) {
+          const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+          label.textContent = i;
+          label.setAttribute('x', p.x); label.setAttribute('y', origin.y+16);
+          label.setAttribute('fill', '#94a3b8'); label.setAttribute('font-size', '10');
+          label.setAttribute('text-anchor', 'middle');
+          axes.appendChild(label);
+        }
+      }
+      for (let j = -Math.floor(H/(2*unit)); j <= Math.floor(H/(2*unit)); j++) {
+        if (j === 0) continue;
+        const p = toScreen({x:0, y:j});
+        const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
+        tick.setAttribute('x1', origin.x-5); tick.setAttribute('y1', p.y);
+        tick.setAttribute('x2', origin.x+5); tick.setAttribute('y2', p.y);
+        tick.setAttribute('stroke', '#64748b'); tick.setAttribute('stroke-width', '1');
+        axes.appendChild(tick);
+        if (showLabels) {
+          const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+          label.textContent = j;
+          label.setAttribute('x', origin.x-10); label.setAttribute('y', p.y+3);
+          label.setAttribute('fill', '#94a3b8'); label.setAttribute('font-size', '10');
+          label.setAttribute('text-anchor', 'end');
+          axes.appendChild(label);
+        }
+      }
+
+      // Origin label
+      if (showLabels) {
+        const oLab = document.createElementNS('http://www.w3.org/2000/svg','text');
+        oLab.textContent = 'O';
+        oLab.setAttribute('x', origin.x+6); oLab.setAttribute('y', origin.y-6);
+        oLab.setAttribute('fill', '#e2e8f0'); oLab.setAttribute('font-size', '12');
+        axes.appendChild(oLab);
+      }
+
+      svg.appendChild(axes);
+    }
+
+    // ---------- Draw Shapes ----------
+    function drawPoint(p, color, id='P') {
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      const s = toScreen(p);
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx', s.x); circle.setAttribute('cy', s.y);
+      circle.setAttribute('r', '6');
+      circle.setAttribute('fill', color);
+      circle.setAttribute('class', 'handle');
+      circle.dataset.id = id;
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+      label.textContent = `${id}(${p.x}, ${p.y})`;
+      label.setAttribute('x', s.x + 10); label.setAttribute('y', s.y - 8);
+      label.setAttribute('fill', color); label.setAttribute('font-size', '12');
+
+      g.appendChild(circle); g.appendChild(label);
+      return g;
+    }
+
+    function drawTriangle(pts, color, filled=false, suffix='') {
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      const ptsStr = pts.map(p => {
+        const s = toScreen(p); return `${s.x},${s.y}`;
+      }).join(' ');
+      path.setAttribute('points', ptsStr);
+      path.setAttribute('fill', filled ? color + '40' : 'none');
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', '2');
+
+      g.appendChild(path);
+
+      // vertices
+      pts.forEach(p => {
+        const s = toScreen(p);
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx', s.x); c.setAttribute('cy', s.y);
+        c.setAttribute('r', '6'); c.setAttribute('fill', color);
+        c.setAttribute('class', 'handle');
+        c.dataset.id = p.id + suffix;
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.textContent = `${p.id}${suffix}(${p.x}, ${p.y})`;
+        t.setAttribute('x', s.x + 10); t.setAttribute('y', s.y - 8);
+        t.setAttribute('fill', color); t.setAttribute('font-size', '12');
+        g.appendChild(c); g.appendChild(t);
+      });
+
+      return g;
+    }
+
+    // ---------- Rendering ----------
+    function render() {
+      drawAxes();
+
+      // Toggle grid background
+      svg.classList.toggle('grid-bg', gridToggle.checked);
+
+      if (mode === 'point') {
+        // Original
+        svg.appendChild(drawPoint(point, '#60a5fa', 'P'));
+        // Image
+        const imgP = applyTransform(point);
+        svg.appendChild(drawPoint(imgP, '#34d399', "P'"));
+        updateLists([{id:'P', ...point}], [{id:"P'", ...imgP}]);
+      } else {
+        // Triangle original
+        svg.appendChild(drawTriangle(triangle, '#60a5fa', true, ''));
+        // Triangle image
+        const imgT = triangle.map(p => ({ id: p.id, ...applyTransform(p) }));
+        svg.appendChild(drawTriangle(imgT, '#34d399', false, "'"));
+        updateLists(triangle, imgT);
+      }
+
+      updateFormula();
+    }
+
+    function updateLists(orig, img) {
+      origList.innerHTML = orig.map(p => `<div>${p.id} = (${round(p.x)}, ${round(p.y)})</div>`).join('');
+      imageList.innerHTML = img.map(p => `<div>${p.id} = (${round(p.x)}, ${round(p.y)})</div>`).join('');
+    }
+
+    function updateFormula() {
+      let html = '';
+      if (transformType === 'translation') {
+        html = `<div class="fade-in">Translasi T(Δx, Δy): (x, y) → (x + ${translation.dx}, y + ${translation.dy})</div>`;
+      } else if (transformType === 'reflection') {
+        const map = {
+          'x': '(x, y) → (x, −y)',
+          'y': '(x, y) → (−x, y)',
+          'y=x': '(x, y) → (y, x)',
+          'y=-x': '(x, y) → (−y, −x)'
+        };
+        html = `<div class="fade-in">Refleksi terhadap ${refToText(reflection)}: ${map[reflection]}</div>`;
+      } else if (transformType === 'rotation') {
+        const map = {
+          '90ccw': '(x, y) → (−y, x)',
+          '180': '(x, y) → (−x, −y)',
+          '270ccw': '(x, y) → (y, −x)',
+          '90cw': '(x, y) → (y, −x)',
+          '270cw': '(x, y) → (−y, x)',
+          '360': '(x, y) → (x, y)'
+        };
+        html = `<div class="fade-in">Rotasi pusat O: ${rotToText(rotation)} — ${map[rotation]}</div>`;
+      } else if (transformType === 'dilation') {
+        html = `<div class="fade-in">Dilatasi skala k = ${scaleK} (pusat O): (x, y) → (${scaleK}x, ${scaleK}y)</div>`;
+      }
+      formulaBox.innerHTML = html;
+    }
+
+    function refToText(r) {
+      if (r==='x') return 'Sumbu X';
+      if (r==='y') return 'Sumbu Y';
+      if (r==='y=x') return 'garis y = x';
+      if (r==='y=-x') return 'garis y = −x';
+      return r;
+    }
+    function rotToText(r) {
+      switch (r) {
+        case '90ccw': return '90° berlawanan jarum jam';
+        case '180': return '180°';
+        case '270ccw': return '270° berlawanan jarum jam';
+        case '90cw': return '90° searah jarum jam';
+        case '270cw': return '270° searah jarum jam';
+        case '360': return '360°';
+      }
+    }
+    function round(v) {
+      // Keep integers as int, otherwise 2 decimals
+      return Math.abs(v - Math.round(v)) < 1e-9 ? Math.round(v) : +v.toFixed(2);
+    }
+
+    // ---------- Interaction (Drag) ----------
+    svg.addEventListener('mousedown', (e) => {
+      const target = e.target;
+      if (target.tagName.toLowerCase() === 'circle' && target.classList.contains('handle')) {
+        dragging = target;
+      }
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const ctm = svg.getScreenCTM();
+      const sp = pt.matrixTransform(ctm.inverse());
+      // Lock to plane bounds
+      const log = toLogical(sp.x, sp.y);
+      // Snap to 0.25 to keep it neat
+      const sx = Math.round(log.x * 4) / 4;
+      const sy = Math.round(log.y * 4) / 4;
+
+      if (mode === 'point') {
+        point.x = clamp(sx, -9, 9);
+        point.y = clamp(sy, -6, 6);
+        pxInput.value = point.x;
+        pyInput.value = point.y;
+      } else {
+        const id = dragging.dataset.id.replace("'",'').slice(0,1);
+        const v = triangle.find(p => p.id === id);
+        if (v) {
+          v.x = clamp(sx, -9, 9);
+          v.y = clamp(sy, -6, 6);
+        }
+      }
+      render();
+    });
+    window.addEventListener('mouseup', () => dragging = null);
+
+    // ---------- Controls Wiring ----------
+    // Mode
+    $('#modePoint').addEventListener('click', () => {
+      mode = 'point';
+      $('#modePoint').className = 'px-2 py-1 rounded bg-indigo-600 text-white';
+      $('#modeShape').className = 'px-2 py-1 rounded bg-slate-700 hover:bg-slate-600';
+      $('#pointInputs').classList.remove('hidden');
+      render();
+    });
+    $('#modeShape').addEventListener('click', () => {
+      mode = 'shape';
+      $('#modeShape').className = 'px-2 py-1 rounded bg-indigo-600 text-white';
+      $('#modePoint').className = 'px-2 py-1 rounded bg-slate-700 hover:bg-slate-600';
+      $('#pointInputs').classList.add('hidden');
+      render();
+    });
+
+    // Transform type
+    $$('.t-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.t-btn').forEach(b => b.classList.remove('bg-white/10'));
+        btn.classList.add('bg-white/10');
+        transformType = btn.dataset.t;
+        // Toggle panels
+        $$('.param-panel').forEach(p => p.classList.add('hidden'));
+        $(`[data-p="${transformType}"]`).classList.remove('hidden');
+        render();
+      });
+    });
+
+    // Reflection buttons
+    $$('.ref-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.ref-btn').forEach(b => b.classList.remove('bg-white/10'));
+        btn.classList.add('bg-white/10');
+        reflection = btn.dataset.ref;
+        render();
+      });
+    });
+
+    // Rotation buttons
+    $$('.rot-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.rot-btn').forEach(b => b.classList.remove('bg-white/10'));
+        btn.classList.add('bg-white/10');
+        rotation = btn.dataset.rot;
+        render();
+      });
+    });
+
+    // Scale preset
+    $$('.scale-suggest').forEach(btn => {
+      btn.addEventListener('click', () => {
+        scaleK = parseFloat(btn.dataset.s);
+        scaleInput.value = scaleK;
+        render();
+      });
+    });
+
+    // Inputs
+    dxInput.addEventListener('input', () => { translation.dx = parseFloat(dxInput.value||0); });
+    dyInput.addEventListener('input', () => { translation.dy = parseFloat(dyInput.value||0); });
+    pxInput.addEventListener('input', () => { point.x = parseFloat(pxInput.value||0); render(); });
+    pyInput.addEventListener('input', () => { point.y = parseFloat(pyInput.value||0); render(); });
+    scaleInput.addEventListener('input', () => { scaleK = parseFloat(scaleInput.value||1); render(); });
+
+    // Toggles
+    gridToggle.addEventListener('change', render);
+    labelToggle.addEventListener('change', render);
+
+    // Buttons
+    applyBtn.addEventListener('click', () => {
+      // Apply by updating the original to become image (so you can chain)
+      if (mode === 'point') {
+        point = applyTransform(point);
+        pxInput.value = point.x; pyInput.value = point.y;
+      } else {
+        triangle = triangle.map(p => ({ ...applyTransform(p), id: p.id }));
+      }
+      render();
+    });
+    resetBtn.addEventListener('click', () => {
+      // Reset to defaults
+      mode = 'point';
+      point = { x: 1, y: 2 };
+      triangle = [
+        { id:'A', x:-2, y:1 },
+        { id:'B', x:1, y:3 },
+        { id:'C', x:3, y:-1 }
+      ];
+      translation = { dx: 2, dy: 1 };
+      reflection = 'x';
+      rotation = '90ccw';
+      scaleK = 1.5;
+      dxInput.value = 2; dyInput.value = 1; scaleInput.value = 1.5;
+      pxInput.value = 1; pyInput.value = 2;
+      $('#modePoint').click();
+      // reset selected buttons visual
+      $$('.t-btn').forEach((b,i)=> b.classList.toggle('bg-white/10', b.dataset.t==='translation'));
+      $$('.ref-btn').forEach((b,i)=> b.classList.toggle('bg-white/10', b.dataset.ref==='x'));
+      $$('.rot-btn').forEach((b,i)=> b.classList.toggle('bg-white/10', b.dataset.rot==='90ccw'));
+      render();
+    });
+    randomBtn.addEventListener('click', () => {
+      const rx = Math.floor(Math.random()*9) - 4; // -4..4
+      const ry = Math.floor(Math.random()*7) - 3; // -3..3
+      if (mode === 'point') {
+        point = { x: rx, y: ry }; pxInput.value = rx; pyInput.value = ry;
+      } else {
+        triangle = [
+          { id:'A', x: rx, y: ry },
+          { id:'B', x: rx+2, y: ry+1 },
+          { id:'C', x: rx-1, y: ry-2 }
+        ];
+      }
+      render();
+    });
+
+    // ---------- Practice: Question Generator ----------
+    const qText = $('#qText'), qParams = $('#qParams'), qForm = $('#qForm');
+    const ansX = $('#ansX'), ansY = $('#ansY'), qFeedback = $('#qFeedback');
+    let currentQ = null;
+
+    function newQuestion() {
+      // Types: translation, reflection (x/y/y=x/y=-x), rotation (six), dilation
+      const types = ['translation','reflection','rotation','dilation'];
+      const t = types[Math.floor(Math.random()*types.length)];
+      const px = Math.floor(Math.random()*9) - 4;
+      const py = Math.floor(Math.random()*9) - 4;
+      let desc = '', params = {}, correct = {};
+
+      if (t === 'translation') {
+        const a = Math.floor(Math.random()*5) - 2;
+        const b = Math.floor(Math.random()*5) - 2;
+        params = { a, b };
+        desc = `Diberikan titik A(${px}, ${py}). Tentukan bayangan A' oleh translasi T(${a}, ${b}).`;
+        correct = { x: px + a, y: py + b };
+      } else if (t === 'reflection') {
+        const refs = ['x','y','y=x','y=-x'];
+        const r = refs[Math.floor(Math.random()*refs.length)];
+        params = { r };
+        const rTxt = refToText(r);
+        desc = `Diberikan titik A(${px}, ${py}). Tentukan bayangan A' hasil refleksi terhadap ${rTxt}.`;
+        correct = (()=>{
+          const P = {x:px, y:py};
+          switch(r){case 'x': return {x:P.x, y:-P.y}; case 'y': return {x:-P.x, y:P.y}; case 'y=x': return {x:P.y, y:P.x}; case 'y=-x': return {x:-P.y, y:-P.x};}
+        })();
+      } else if (t === 'rotation') {
+        const rots = ['90ccw','180','270ccw','90cw','270cw','360'];
+        const r = rots[Math.floor(Math.random()*rots.length)];
+        params = { r };
+        desc = `Diberikan titik A(${px}, ${py}). Tentukan bayangan A' hasil rotasi ${rotToText(r)} terhadap pusat O.`;
+        correct = (()=>{
+          const P = {x:px, y:py};
+          switch(r){case '90ccw': return {x:-P.y, y:P.x}; case '180': return {x:-P.x, y:-P.y}; case '270ccw': return {x:P.y, y:-P.x}; case '90cw': return {x:P.y, y:-P.x}; case '270cw': return {x:-P.y, y:P.x}; case '360': return {x:P.x, y:P.y};}
+        })();
+      } else if (t === 'dilation') {
+        const ks = [0.5, 2, -1, 1.5][Math.floor(Math.random()*4)];
+        params = { k: ks };
+        desc = `Diberikan titik A(${px}, ${py}). Tentukan bayangan A' hasil dilatasi skala k = ${ks} terhadap pusat O.`;
+        correct = { x: +(px*ks).toFixed(2), y: +(py*ks).toFixed(2) };
+      }
+
+      currentQ = { t, px, py, params, correct };
+      qText.textContent = desc;
+      qParams.textContent = '';
+      ansX.value = ''; ansY.value = '';
+      qFeedback.textContent = '';
+    }
+
+    $('#newQuestion').addEventListener('click', newQuestion);
+    $('#showAnswer').addEventListener('click', () => {
+      if (!currentQ) return;
+      qFeedback.innerHTML = `<span class="text-emerald-300">Jawaban:</span> A' = (${currentQ.correct.x}, ${currentQ.correct.y})`;
+    });
+    qForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentQ) return;
+      const ux = parseFloat(ansX.value);
+      const uy = parseFloat(ansY.value);
+      if (isNaN(ux) || isNaN(uy)) { qFeedback.textContent = 'Masukkan angka untuk x\' dan y\'.'; qFeedback.className='text-amber-300 text-sm mt-1'; return; }
+      const ok = Math.abs(ux - currentQ.correct.x) < 1e-6 && Math.abs(uy - currentQ.correct.y) < 1e-6;
+      if (ok) {
+        qFeedback.textContent = 'Benar! Mantap 🎉';
+        qFeedback.className = 'text-emerald-300 text-sm mt-1';
+      } else {
+        qFeedback.innerHTML = `Belum tepat. Coba lagi atau klik "Tampilkan Jawaban".`;
+        qFeedback.className = 'text-rose-300 text-sm mt-1';
+      }
+    });
+
+    // ---------- Practice: Classifier ----------
+    const clues = [
+      { text: 'Bangun bergeser ke kanan 3 dan naik 2 tanpa berubah bentuk.', t: 'translasi' },
+      { text: 'Bangun seolah-olah bercermin pada sumbu-Y.', t: 'refleksi' },
+      { text: 'Bangun diputar 90° berlawanan jarum jam terhadap O.', t: 'rotasi' },
+      { text: 'Semua panjang sisi menjadi dua kali dari asal, arah sama.', t: 'dilatasi' },
+      { text: 'Ukuran tetap, tapi posisinya berbalik arah terhadap garis y = x.', t: 'refleksi' },
+      { text: 'Bangun mengecil setengah terhadap pusat O.', t: 'dilatasi' },
+    ];
+    const clueBox = $('#clue'); const clfFeedback = $('#clfFeedback'); const newClueBtn = $('#newClue');
+    let currentClue = null;
+
+    function newClue() {
+      const c = clues[Math.floor(Math.random()*clues.length)];
+      currentClue = c;
+      clueBox.textContent = c.text;
+      clfFeedback.textContent = '';
+    }
+    $$('.clf-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        if (!currentClue) return;
+        const pick = b.dataset.type;
+        const ok = pick === currentClue.t;
+        if (ok) { clfFeedback.textContent = 'Tepat! 👏'; clfFeedback.className='text-emerald-300 text-sm mt-3'; }
+        else { clfFeedback.textContent = 'Belum tepat. Perhatikan kata kuncinya!'; clfFeedback.className='text-rose-300 text-sm mt-3'; }
+      });
+    });
+    newClueBtn.addEventListener('click', newClue);
+
+    // ---------- Initialize ----------
+    function init() {
+      // Default selections
+      $$('.t-btn').forEach(b => b.classList.toggle('bg-white/10', b.dataset.t === transformType));
+      $$('.ref-btn').forEach(b => b.classList.toggle('bg-white/10', b.dataset.ref === reflection));
+      $$('.rot-btn').forEach(b => b.classList.toggle('bg-white/10', b.dataset.rot === rotation));
+      render();
+      newQuestion();
+      newClue();
+    }
+    init();
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'983ed8ee075def6d',t:'MTc1ODY4MDg5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
